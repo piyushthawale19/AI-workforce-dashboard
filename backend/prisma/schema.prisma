@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("viewer")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Worker {
+  id       Int    @id @default(autoincrement())
+  workerId String @unique @map("worker_id")
+  name     String
+
+  events AIEvent[]
+
+  @@map("workers")
+}
+
+model Workstation {
+  id        Int    @id @default(autoincrement())
+  stationId String @unique @map("station_id")
+  name      String
+
+  events AIEvent[]
+
+  @@map("workstations")
+}
+
+model AIEvent {
+  id            Int      @id @default(autoincrement())
+  timestamp     DateTime
+  workerId      String   @map("worker_id")
+  workstationId String   @map("workstation_id")
+  eventType     String   @map("event_type")
+  confidence    Float
+  count         Int      @default(0)
+  modelVersion  String?  @map("model_version")
+  eventHash     String   @unique @map("event_hash")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  worker      Worker      @relation(fields: [workerId], references: [workerId], onDelete: Cascade)
+  workstation Workstation @relation(fields: [workstationId], references: [stationId], onDelete: Cascade)
+
+  @@unique([workerId, workstationId, timestamp, eventType])
+  @@index([workerId])
+  @@index([workstationId])
+  @@index([timestamp])
+  @@index([confidence])
+  @@map("ai_events")
+}

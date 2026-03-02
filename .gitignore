@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+*.log
+.env
+.env.local
+ARCHITECTURE.md
+PROJECT_SUMMARY.md
+CONTRIBUTING.md
