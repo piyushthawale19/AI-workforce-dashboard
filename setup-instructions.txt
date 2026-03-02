@@ -1,0 +1,996 @@
+================================================================================
+AI-POWERED FACTORY PRODUCTIVITY DASHBOARD - COMPLETE SETUP INSTRUCTIONS
+================================================================================
+
+Version: 1.0.0
+Last Updated: March 2, 2026
+Status: Production Ready
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+
+1. Project Overview
+2. Prerequisites
+3. Quick Start (Docker - Recommended)
+4. Local Development Setup
+5. Database Setup
+6. Environment Configuration
+7. Testing the Application
+8. Default Credentials & API Usage
+9. Troubleshooting
+10. Project Structure
+
+================================================================================
+1. PROJECT OVERVIEW
+================================================================================
+
+This is a production-ready full-stack application for monitoring worker 
+productivity using AI-generated events from edge cameras.
+
+TECH STACK:
+  - Backend:  Express.js + TypeScript + Prisma + SQLite
+  - Frontend: Next.js 14 + React + TailwindCSS
+  - Auth:     JWT tokens with bcrypt password hashing
+  - Database: SQLite (development), easily upgradable to PostgreSQL
+
+FEATURES:
+  - Real-time event ingestion from edge cameras
+  - Duplicate event detection & handling
+  - Out-of-order timestamp processing
+  - Worker & workstation performance metrics
+  - Factory-level aggregations
+  - JWT authentication with role-based access control
+  - Responsive dashboard UI
+  - Seed data generation for testing
+
+================================================================================
+2. PREREQUISITES
+================================================================================
+
+REQUIRED SOFTWARE:
+
+  ✓ Node.js 20+ (LTS recommended)
+    Download: https://nodejs.org/
+
+  ✓ npm (comes with Node.js)
+    Verify: npm --version
+
+  ✓ Docker Desktop (for Docker setup)
+    Download: https://www.docker.com/products/docker-desktop
+    
+  ✓ Docker Compose (usually included with Docker Desktop)
+    Verify: docker-compose --version
+
+OPTIONAL (for local development):
+
+  ✓ Git (for version control)
+  ✓ VS Code or any code editor
+  ✓ Postman or Insomnia (for API testing)
+
+SYSTEM REQUIREMENTS:
+
+  - OS: Windows 10/11, macOS, or Linux
+  - RAM: 4GB minimum, 8GB recommended
+  - Disk: 2GB free space
+
+================================================================================
+3. QUICK START (DOCKER - RECOMMENDED)
+================================================================================
+
+This is the FASTEST way to get the application running!
+
+STEP 1: Navigate to project directory
+--------
+Open PowerShell (Windows) or Terminal (Mac/Linux) and run:
+
+  cd "Technical Assessment Full-Stack ML Ops Engineer"
+
+STEP 2: Start with Docker Compose
+--------
+Run the automated start script:
+
+  # Windows (PowerShell):
+  .\start.ps1
+
+  # Mac/Linux:
+  chmod +x start.sh
+  ./start.sh
+
+  # OR manually:
+  docker-compose up --build
+
+STEP 3: Access the application
+--------
+The script will automatically:
+  ✓ Check if Docker is installed
+  ✓ Stop any existing containers
+  ✓ Build and start new containers
+  ✓ Initialize the database
+  ✓ Create default admin user
+
+Access Points:
+  - Frontend: http://localhost:3000
+  - Backend:  http://localhost:5000
+  - Health:   http://localhost:5000/health
+
+STEP 4: Login
+--------
+Use the default credentials:
+  Email:    admin@factory.com
+  Password: password123
+
+STEP 5: Seed sample data
+--------
+Click "Seed Sample Data" button on the dashboard to populate test data.
+
+TO STOP THE APPLICATION:
+  docker-compose down
+
+TO STOP AND REMOVE ALL DATA:
+  docker-compose down -v
+
+================================================================================
+4. LOCAL DEVELOPMENT SETUP
+================================================================================
+
+Use this method if you want to develop and modify the code.
+
+────────────────────────────────────────────────────────────────────────────────
+4.1 BACKEND SETUP
+────────────────────────────────────────────────────────────────────────────────
+
+STEP 1: Navigate to backend directory
+--------
+  cd backend
+
+STEP 2: Install dependencies
+--------
+  npm install
+
+NOTE: This will install all required packages including:
+  - Express.js (web framework)
+  - Prisma (ORM)
+  - bcrypt (password hashing)
+  - jsonwebtoken (JWT auth)
+  - winston (logging)
+  - zod (validation)
+  - And their TypeScript types
+
+STEP 3: Generate Prisma client
+--------
+  npm run prisma:generate
+
+This generates the Prisma client based on schema.prisma
+
+STEP 4: Push database schema
+--------
+  npm run prisma:push
+
+This creates the SQLite database and all tables at:
+  prisma/dev.db
+
+STEP 5: Create .env file (optional)
+--------
+Create a file named .env in the backend directory:
+
+  DATABASE_URL="file:./prisma/dev.db"
+  JWT_SECRET="your-super-secret-jwt-key-change-in-production"
+  JWT_EXPIRES_IN="24h"
+  PORT=5000
+  NODE_ENV="development"
+
+NOTE: Default values are already set in config files if .env is missing
+
+STEP 6: Start development server
+--------
+  npm run dev
+
+The backend will start on http://localhost:5000
+
+You should see:
+  ✓ Server running on port 5000
+  ✓ Database connected
+  ✓ Default admin user created
+
+────────────────────────────────────────────────────────────────────────────────
+4.2 FRONTEND SETUP
+────────────────────────────────────────────────────────────────────────────────
+
+STEP 1: Open a NEW terminal/PowerShell window
+--------
+Keep the backend running in the first terminal!
+
+STEP 2: Navigate to frontend directory
+--------
+  cd frontend
+
+STEP 3: Install dependencies
+--------
+  npm install
+
+This will install:
+  - Next.js 14 (React framework)
+  - React 18
+  - TailwindCSS (styling)
+  - Axios (HTTP client)
+  - TypeScript types
+
+STEP 4: Create .env.local file (optional)
+--------
+Create a file named .env.local in the frontend directory:
+
+  NEXT_PUBLIC_API_URL=http://localhost:5000
+
+NOTE: Default is already configured if file is missing
+
+STEP 5: Start development server
+--------
+  npm run dev
+
+The frontend will start on http://localhost:3000
+
+You should see:
+  ✓ Next.js development server running
+  ✓ Ready on http://localhost:3000
+
+STEP 6: Open browser and test
+--------
+Navigate to: http://localhost:3000
+
+You should see the login page!
+
+================================================================================
+5. DATABASE SETUP
+================================================================================
+
+The project uses Prisma ORM with SQLite (easily upgradable to PostgreSQL).
+
+DATABASE SCHEMA:
+
+  ┌─────────────┐
+  │   User      │  (Authentication)
+  │─────────────│
+  │ id          │
+  │ email       │
+  │ password    │
+  │ role        │
+  │ createdAt   │
+  └─────────────┘
+
+  ┌─────────────┐
+  │  Worker     │  (Factory workers)
+  │─────────────│
+  │ id          │
+  │ worker_id   │ (unique identifier like W001)
+  │ name        │
+  │ createdAt   │
+  └─────────────┘
+
+  ┌─────────────┐
+  │ Workstation │  (Factory stations)
+  │─────────────│
+  │ id          │
+  │ station_id  │ (unique identifier like S001)
+  │ name        │
+  │ createdAt   │
+  └─────────────┘
+
+  ┌─────────────┐
+  │  AIEvent    │  (Events from edge cameras)
+  │─────────────│
+  │ id          │
+  │ timestamp   │ ← Indexed for fast queries
+  │ worker_id   │ ← Foreign key to Worker
+  │ workstation_id │ ← Foreign key to Workstation
+  │ event_type  │ (working, idle, away, etc.)
+  │ confidence  │ (AI model confidence 0-1)
+  │ count       │ (units produced)
+  │ createdAt   │
+  └─────────────┘
+
+PRISMA COMMANDS:
+
+  # Generate Prisma client (after schema changes):
+  npm run prisma:generate
+
+  # Push schema to database (create/update tables):
+  npm run prisma:push
+
+  # Create migration (for production):
+  npm run prisma:migrate
+
+  # Open Prisma Studio (database GUI):
+  npx prisma studio
+
+  # Reset database (WARNING: deletes all data):
+  npx prisma db push --force-reset
+
+DATABASE FILE LOCATION:
+
+  - Local: backend/prisma/dev.db
+  - Docker: /app/data/dev.db (persisted in volume)
+
+================================================================================
+6. ENVIRONMENT CONFIGURATION
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+BACKEND ENVIRONMENT VARIABLES (.env)
+────────────────────────────────────────────────────────────────────────────────
+
+Create: backend/.env
+
+  # Database
+  DATABASE_URL="file:./prisma/dev.db"
+
+  # JWT Configuration
+  JWT_SECRET="your-super-secret-jwt-key-min-32-characters-long"
+  JWT_EXPIRES_IN="24h"
+
+  # Server
+  PORT=5000
+  NODE_ENV="development"
+
+  # CORS (optional)
+  CORS_ORIGIN="http://localhost:3000"
+
+IMPORTANT NOTES:
+  - NEVER commit JWT_SECRET to version control!
+  - Change JWT_SECRET in production
+  - Use strong, random secrets (min 32 characters)
+  - For production, use environment-specific secrets
+
+────────────────────────────────────────────────────────────────────────────────
+FRONTEND ENVIRONMENT VARIABLES (.env.local)
+────────────────────────────────────────────────────────────────────────────────
+
+Create: frontend/.env.local
+
+  # Backend API URL
+  NEXT_PUBLIC_API_URL=http://localhost:5000
+
+NOTE: Variables prefixed with NEXT_PUBLIC_ are exposed to the browser
+
+PRODUCTION CONFIGURATION:
+  NEXT_PUBLIC_API_URL=https://api.yourcompany.com
+
+================================================================================
+7. TESTING THE APPLICATION
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+7.1 MANUAL TESTING (UI)
+────────────────────────────────────────────────────────────────────────────────
+
+STEP 1: Open the application
+--------
+  URL: http://localhost:3000
+
+STEP 2: Login with default admin
+--------
+  Email:    admin@factory.com
+  Password: password123
+
+STEP 3: Seed sample data
+--------
+  Click "Seed Sample Data" button on the dashboard
+
+  This creates:
+    ✓ 5 workers (W001 to W005)
+    ✓ 5 workstations (S001 to S005)
+    ✓ 100+ realistic AI events
+
+STEP 4: View dashboard
+--------
+  Observe:
+    ✓ Factory overview cards (total workers, stations, utilization)
+    ✓ Worker performance table (active time, idle time, units produced)
+    ✓ Workstation metrics table (occupancy, utilization, throughput)
+    ✓ Color-coded utilization bars (green = high, yellow = medium, red = low)
+
+STEP 5: Test logout
+--------
+  Click "Logout" button
+  Verify redirect to login page
+
+STEP 6: Test registration
+--------
+  Click "Don't have an account? Register here"
+  Create a new user account
+  Login with new credentials
+
+────────────────────────────────────────────────────────────────────────────────
+7.2 API TESTING (POSTMAN/CURL)
+────────────────────────────────────────────────────────────────────────────────
+
+TEST 1: Health check
+--------
+  GET http://localhost:5000/health
+
+  Expected: { "status": "ok", "timestamp": "..." }
+
+TEST 2: Register a new user
+--------
+  POST http://localhost:5000/api/auth/register
+  
+  Headers:
+    Content-Type: application/json
+  
+  Body:
+    {
+      "email": "test@example.com",
+      "password": "password123",
+      "name": "Test User",
+      "role": "viewer"
+    }
+
+  Expected: 
+    Status: 201
+    Body: { "message": "User registered successfully" }
+
+TEST 3: Login
+--------
+  POST http://localhost:5000/api/auth/login
+  
+  Headers:
+    Content-Type: application/json
+  
+  Body:
+    {
+      "email": "admin@factory.com",
+      "password": "password123"
+    }
+
+  Expected:
+    Status: 200
+    Body: { "token": "eyJhbGc...", "user": {...} }
+
+  SAVE THE TOKEN - you'll need it for protected routes!
+
+TEST 4: Get factory metrics (requires auth)
+--------
+  GET http://localhost:5000/api/metrics/factory
+  
+  Headers:
+    Authorization: Bearer <your-token-from-login>
+
+  Expected:
+    Status: 200
+    Body: {
+      "totalWorkers": 5,
+      "totalWorkstations": 5,
+      "totalProductiveTime": 450.5,
+      "totalProduction": 120,
+      ...
+    }
+
+TEST 5: Seed data (requires auth)
+--------
+  POST http://localhost:5000/api/seed
+  
+  Headers:
+    Authorization: Bearer <your-token-from-login>
+
+  Expected:
+    Status: 200
+    Body: {
+      "message": "Database seeded successfully",
+      "data": { "workers": 5, "workstations": 5, "events": 100 }
+    }
+
+TEST 6: Ingest an event (requires auth)
+--------
+  POST http://localhost:5000/api/events
+  
+  Headers:
+    Authorization: Bearer <your-token-from-login>
+    Content-Type: application/json
+  
+  Body:
+    {
+      "timestamp": "2026-03-02T10:00:00Z",
+      "worker_id": "W001",
+      "workstation_id": "S001",
+      "event_type": "working",
+      "confidence": 0.95,
+      "count": 5
+    }
+
+  Expected:
+    Status: 201
+    Body: { "message": "Event ingested successfully", "event": {...} }
+
+TEST 7: Reset data (admin only)
+--------
+  POST http://localhost:5000/api/admin/reset-data
+  
+  Headers:
+    Authorization: Bearer <your-admin-token>
+
+  Expected:
+    Status: 200
+    Body: {
+      "message": "Data reset and reseeded successfully",
+      "data": { "workers": 6, "workstations": 6, "events": 200+ }
+    }
+
+  NOTE: Requires admin role token!
+
+────────────────────────────────────────────────────────────────────────────────
+7.3 CURL COMMANDS (Terminal Testing)
+────────────────────────────────────────────────────────────────────────────────
+
+# Health check
+curl http://localhost:5000/health
+
+# Login and save token
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@factory.com","password":"password123"}'
+
+# Get metrics (replace TOKEN with actual token)
+curl http://localhost:5000/api/metrics/factory \
+  -H "Authorization: Bearer TOKEN"
+
+# Seed data
+curl -X POST http://localhost:5000/api/seed \
+  -H "Authorization: Bearer TOKEN"
+
+# Ingest event
+curl -X POST http://localhost:5000/api/events \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "timestamp": "2026-03-02T10:00:00Z",
+    "worker_id": "W001",
+    "workstation_id": "S001",
+    "event_type": "working",
+    "confidence": 0.95,
+    "count": 5
+  }'
+
+================================================================================
+8. DEFAULT CREDENTIALS & API USAGE
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+DEFAULT USERS
+────────────────────────────────────────────────────────────────────────────────
+
+The system automatically creates a default admin user on startup:
+
+  EMAIL:    admin@factory.com
+  PASSWORD: password123
+  ROLE:     admin
+
+ROLES:
+  - admin:  Full access (can reset data, access all endpoints)
+  - viewer: Read-only access (can view metrics, cannot modify data)
+
+────────────────────────────────────────────────────────────────────────────────
+API ENDPOINTS SUMMARY
+────────────────────────────────────────────────────────────────────────────────
+
+PUBLIC ENDPOINTS (no auth required):
+  POST   /api/auth/register     Register new user
+  POST   /api/auth/login        Login and get JWT token
+  GET    /health                Health check
+
+PROTECTED ENDPOINTS (requires valid JWT token):
+  POST   /api/events            Ingest single AI event
+  POST   /api/events/batch      Ingest multiple events
+  POST   /api/seed              Seed sample data
+  GET    /api/metrics/factory   Get factory-level metrics
+  GET    /api/metrics/workers   Get all worker metrics
+  GET    /api/metrics/workstations  Get all workstation metrics
+
+ADMIN ENDPOINTS (requires admin role):
+  POST   /api/admin/reset-data  Reset and reseed database
+
+────────────────────────────────────────────────────────────────────────────────
+EVENT TYPES
+────────────────────────────────────────────────────────────────────────────────
+
+Valid event_type values:
+  - "working"     Worker actively engaged in task
+  - "idle"        Worker present but not working
+  - "away"        Worker temporarily absent
+  - "break"       Scheduled break time
+
+────────────────────────────────────────────────────────────────────────────────
+METRICS CALCULATIONS
+────────────────────────────────────────────────────────────────────────────────
+
+WORKER METRICS:
+  - Active Time:   Sum of all "working" event durations (minutes)
+  - Idle Time:     Sum of all "idle" event durations (minutes)
+  - Utilization:   (Active Time / Total Time) × 100
+  - Total Units:   Sum of all "count" fields from events
+  - Units/Hour:    (Total Units / Active Time) × 60
+
+WORKSTATION METRICS:
+  - Occupancy:     Time any worker was at station (minutes)
+  - Utilization:   (Occupancy / Total Time) × 100
+  - Total Units:   Sum of production at station
+  - Throughput:    (Total Units / Occupancy) × 60
+
+FACTORY METRICS:
+  - Total Workers:         Unique worker count
+  - Total Workstations:    Unique station count
+  - Total Productive Time: Sum of all active time
+  - Total Production:      Sum of all units
+  - Avg Production Rate:   Total units / Total time
+  - Avg Utilization:       Average of all worker utilizations
+
+================================================================================
+9. TROUBLESHOOTING
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+COMMON ISSUES & SOLUTIONS
+────────────────────────────────────────────────────────────────────────────────
+
+ISSUE: "Cannot find module '@prisma/client'"
+SOLUTION:
+  cd backend
+  npm run prisma:generate
+  npm install
+
+ISSUE: "Database prisma/dev.db does not exist"
+SOLUTION:
+  cd backend
+  npm run prisma:push
+
+ISSUE: "Port 5000 is already in use"
+SOLUTION:
+  Option 1: Kill the process using port 5000
+    # Windows:
+    netstat -ano | findstr :5000
+    taskkill /PID <PID> /F
+    
+    # Mac/Linux:
+    lsof -ti:5000 | xargs kill -9
+  
+  Option 2: Change the port in backend/.env
+    PORT=5001
+
+ISSUE: "Port 3000 is already in use"
+SOLUTION:
+  Kill the process or run Next.js on different port:
+    npm run dev -- -p 3001
+
+ISSUE: "Docker containers won't start"
+SOLUTION:
+  docker-compose down -v
+  docker system prune -a
+  docker-compose up --build
+
+ISSUE: "Cannot login / Invalid credentials"
+SOLUTION:
+  1. Check backend is running (http://localhost:5000/health)
+  2. Verify default admin exists:
+     cd backend
+     node check-admin.js
+  3. Reset database:
+     npm run prisma:push -- --force-reset
+     Restart backend server
+
+ISSUE: "CORS errors in browser console"
+SOLUTION:
+  Check backend CORS configuration in src/index.ts
+  Verify frontend URL matches CORS_ORIGIN
+
+ISSUE: "JWT token expired"
+SOLUTION:
+  Logout and login again to get new token
+  Token validity is set to 24 hours
+
+ISSUE: "Database locked" error
+SOLUTION:
+  SQLite is single-writer. Close any tools accessing dev.db:
+    - Prisma Studio
+    - DB Browser for SQLite
+    - Other running instances
+
+ISSUE: "No data showing in dashboard"
+SOLUTION:
+  1. Click "Seed Sample Data" button
+  2. OR use API to seed:
+     POST http://localhost:5000/api/seed
+     with Authorization header
+
+ISSUE: "Cannot access admin endpoint"
+SOLUTION:
+  Admin endpoints require admin role token
+  Login with admin@factory.com to get admin token
+
+────────────────────────────────────────────────────────────────────────────────
+LOGS & DEBUGGING
+────────────────────────────────────────────────────────────────────────────────
+
+BACKEND LOGS:
+  Location: backend/logs/
+  Files:
+    - combined.log  (all logs)
+    - error.log     (errors only)
+  
+  View logs:
+    # Windows PowerShell:
+    Get-Content backend/logs/combined.log -Tail 50 -Wait
+    
+    # Mac/Linux:
+    tail -f backend/logs/combined.log
+
+DOCKER LOGS:
+  # View all logs:
+  docker-compose logs
+  
+  # View backend logs:
+  docker-compose logs backend
+  
+  # View frontend logs:
+  docker-compose logs frontend
+  
+  # Follow logs in real-time:
+  docker-compose logs -f
+
+ENABLE DEBUG MODE:
+  Backend: Set NODE_ENV=development in .env
+  Frontend: npm run dev (development mode has verbose logging)
+
+────────────────────────────────────────────────────────────────────────────────
+VERIFICATION CHECKLIST
+────────────────────────────────────────────────────────────────────────────────
+
+Use this checklist if application isn't working:
+
+  ☐ Node.js 20+ installed?
+      node --version
+  
+  ☐ npm installed?
+      npm --version
+  
+  ☐ Backend dependencies installed?
+      cd backend && npm install
+  
+  ☐ Frontend dependencies installed?
+      cd frontend && npm install
+  
+  ☐ Prisma client generated?
+      cd backend && npm run prisma:generate
+  
+  ☐ Database schema pushed?
+      cd backend && npm run prisma:push
+  
+  ☐ Backend running on port 5000?
+      curl http://localhost:5000/health
+  
+  ☐ Frontend running on port 3000?
+      Open http://localhost:3000 in browser
+  
+  ☐ Default admin user exists?
+      cd backend && node check-admin.js
+  
+  ☐ Can login successfully?
+      Try admin@factory.com / password123
+  
+  ☐ Can seed data?
+      Click "Seed Sample Data" button
+  
+  ☐ Dashboard shows metrics?
+      Check worker and workstation tables
+
+================================================================================
+10. PROJECT STRUCTURE
+================================================================================
+
+Technical Assessment Full-Stack ML Ops Engineer/
+│
+├── backend/                      # Express.js backend application
+│   ├── src/
+│   │   ├── index.ts             # Main entry point, server setup
+│   │   ├── seed.ts              # Database seeding script
+│   │   ├── config/              # Configuration files
+│   │   │   ├── database.ts      # Prisma client setup
+│   │   │   └── index.ts         # Environment variables
+│   │   ├── controllers/         # Request handlers
+│   │   │   ├── AuthController.ts      # Login, register
+│   │   │   ├── EventController.ts     # Event ingestion
+│   │   │   └── MetricsController.ts   # Metrics endpoints
+│   │   ├── services/            # Business logic
+│   │   │   ├── AuthService.ts         # Authentication logic
+│   │   │   ├── EventService.ts        # Event processing
+│   │   │   └── MetricsService.ts      # Metrics computation
+│   │   ├── repositories/        # Database operations
+│   │   │   ├── AIEventRepository.ts
+│   │   │   ├── UserRepository.ts
+│   │   │   ├── WorkerRepository.ts
+│   │   │   └── WorkstationRepository.ts
+│   │   ├── middleware/          # Express middleware
+│   │   │   ├── auth.ts          # JWT verification
+│   │   │   ├── errorHandler.ts  # Error handling
+│   │   │   └── rateLimiter.ts   # Rate limiting
+│   │   ├── routes/              # API routes
+│   │   │   ├── api.routes.ts    # Event & seed routes
+│   │   │   ├── auth.routes.ts   # Auth routes
+│   │   │   └── metrics.routes.ts # Metrics routes
+│   │   ├── utils/               # Utility functions
+│   │   │   ├── crypto.ts        # Encryption helpers
+│   │   │   ├── hash.ts          # Password hashing (bcrypt)
+│   │   │   ├── jwt.ts           # JWT generation/verification
+│   │   │   ├── logger.ts        # Winston logger
+│   │   │   └── validation.ts    # Zod schemas
+│   │   └── types/               # TypeScript types
+│   │       └── index.ts
+│   ├── prisma/
+│   │   ├── schema.prisma        # Database schema
+│   │   └── dev.db               # SQLite database (after setup)
+│   ├── logs/                    # Application logs
+│   ├── package.json             # Dependencies & scripts
+│   ├── tsconfig.json            # TypeScript config
+│   ├── Dockerfile               # Docker build instructions
+│   └── check-admin.js           # Admin user verification script
+│
+├── frontend/                     # Next.js frontend application
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── layout.tsx       # Root layout
+│   │   │   ├── page.tsx         # Home page (redirects to login)
+│   │   │   ├── globals.css      # Global styles
+│   │   │   ├── login/
+│   │   │   │   └── page.tsx     # Login page
+│   │   │   └── dashboard/
+│   │   │       └── page.tsx     # Main dashboard
+│   │   ├── lib/
+│   │   │   └── api.ts           # Axios API client
+│   │   └── types/
+│   │       └── index.ts         # TypeScript types
+│   ├── package.json             # Dependencies & scripts
+│   ├── tsconfig.json            # TypeScript config
+│   ├── next.config.js           # Next.js configuration
+│   ├── tailwind.config.js       # TailwindCSS config
+│   ├── postcss.config.js        # PostCSS config
+│   └── Dockerfile               # Docker build instructions
+│
+├── docker-compose.yml            # Docker orchestration
+├── start.ps1                     # Windows quick start script
+├── start.sh                      # Mac/Linux quick start script
+├── README.md                     # Main documentation
+├── PROJECT_SUMMARY.md            # Deliverables checklist
+├── ARCHITECTURE.md               # Technical architecture
+├── CONTRIBUTING.md               # Contribution guidelines
+└── setup-instructions.txt        # This file!
+
+ARCHITECTURE LAYERS:
+
+  Backend follows layered architecture:
+    routes/ → controllers/ → services/ → repositories/ → database
+  
+  - Routes:       Define API endpoints
+  - Controllers:  Handle HTTP requests/responses
+  - Services:     Business logic & computations
+  - Repositories: Database queries & operations
+  - Middleware:   Cross-cutting concerns (auth, logging, errors)
+
+KEY FILES:
+
+  Backend Entry Point:
+    backend/src/index.ts
+    - Express server setup
+    - Middleware configuration
+    - Route registration
+    - Database connection
+    - Default admin creation
+
+  Database Schema:
+    backend/prisma/schema.prisma
+    - User, Worker, Workstation, AIEvent models
+    - Relationships & indexes
+    - Cascade rules
+
+  Frontend Entry Point:
+    frontend/src/app/layout.tsx (root layout)
+    frontend/src/app/page.tsx (home page)
+    
+  Dashboard:
+    frontend/src/app/dashboard/page.tsx
+    - Factory metrics cards
+    - Worker performance table
+    - Workstation metrics table
+    - Seed data functionality
+
+  API Client:
+    frontend/src/lib/api.ts
+    - Axios instance with interceptors
+    - JWT token management
+    - Error handling
+
+================================================================================
+GETTING HELP
+================================================================================
+
+DOCUMENTATION FILES:
+  - README.md           Primary documentation with architecture diagrams
+  - PROJECT_SUMMARY.md  Complete feature checklist
+  - ARCHITECTURE.md     Deep technical design decisions
+  - CONTRIBUTING.md     Development guidelines
+
+USEFUL COMMANDS:
+
+  # View all npm scripts:
+  npm run
+
+  # Check Node version:
+  node --version
+
+  # Check npm version:
+  npm --version
+
+  # Check Docker version:
+  docker --version
+
+  # Check Docker Compose version:
+  docker-compose --version
+
+  # View backend logs:
+  cd backend && cat logs/combined.log
+
+  # View Prisma schema:
+  cd backend && cat prisma/schema.prisma
+
+  # Open database in Prisma Studio:
+  cd backend && npx prisma studio
+
+SUPPORT:
+  For issues, questions, or contributions, refer to CONTRIBUTING.md
+
+================================================================================
+QUICK REFERENCE COMMANDS
+================================================================================
+
+DOCKER SETUP:
+  Start:   docker-compose up --build
+  Stop:    docker-compose down
+  Reset:   docker-compose down -v
+
+LOCAL SETUP:
+  Backend:  cd backend && npm install && npm run prisma:push && npm run dev
+  Frontend: cd frontend && npm install && npm run dev
+
+DATABASE:
+  Generate: npm run prisma:generate
+  Push:     npm run prisma:push
+  Studio:   npx prisma studio
+
+TESTING:
+  Health:   curl http://localhost:5000/health
+  Login:    POST http://localhost:5000/api/auth/login
+  Metrics:  GET http://localhost:5000/api/metrics/factory
+
+CREDENTIALS:
+  Email:    admin@factory.com
+  Password: password123
+
+URLs:
+  Frontend: http://localhost:3000
+  Backend:  http://localhost:5000
+
+================================================================================
+END OF SETUP INSTRUCTIONS
+================================================================================
+
+Successfully completed? You should now have:
+  ✓ Backend running on http://localhost:5000
+  ✓ Frontend running on http://localhost:3000
+  ✓ Database initialized with schema
+  ✓ Default admin user created
+  ✓ Ability to seed sample data
+  ✓ Working authentication
+  ✓ Dashboard displaying metrics
+
+Need help? Check the troubleshooting section above or consult README.md
+
+Happy developing! 🚀
+
+================================================================================
