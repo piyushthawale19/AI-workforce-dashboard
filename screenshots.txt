@@ -3,26 +3,54 @@ APPLICATION SCREENSHOTS
 
 NOTE: .txt files cannot display images. See SCREENSHOTS.md for visual documentation.
 
-1. REGISTRATION PAGE
-   - Location: /register or click "Don't have an account? Register here"
-   - Image: screenshots/register-page.png
-   - Features: Email input, password input with toggle visibility, create account button
-   - Description: Clean registration form with validation
+================================================================================
+USER FLOW SCREENSHOTS
+================================================================================
 
-2. LOGIN PAGE
-   - Location: /login
-   - Image: screenshots/login-page.png
-   - Features: Email/password login, link to register page
-   - Description: User authentication interface
+1. USER REGISTRATION PAGE
+   - Image: screenshots/user-register.png
+   - Location: /register
+   - Description: New user registration form with email and password fields
+   - Features: Email input, password toggle visibility, create account button
 
-3. DASHBOARD PAGE
-   - Location: /dashboard (protected route)
-   - Image: screenshots/dashboard.png
-   - Features: Factory metrics, worker table, workstation table, seed data button
-   - Description: Main analytics dashboard after login
+2. USER DASHBOARD - BEFORE SEED DATA
+   - Image: screenshots/user-before-seed.png
+   - Location: /dashboard (after login as user)
+   - Description: Empty dashboard before clicking "Seed Sample Data" button
+   - Shows: Empty metrics cards, no worker/workstation data, "Seed Sample Data" button
 
-HOW TO ADD SCREENSHOTS:
------------------------
-1. Create a 'screenshots' folder in the project root
-2. Save your screenshots with descriptive names (e.g., register-page.png, login-page.png, dashboard.png)
-3. Reference them in SCREENSHOTS.md using markdown image syntax: ![Description](screenshots/image-name.png)
+3. USER DASHBOARD - AFTER SEED COMPLETED
+   - Image: screenshots/user-after-seed.png
+   - Location: /dashboard (after seeding data)
+   - Description: Dashboard populated with sample data after clicking seed button
+   - Shows: Factory metrics, worker performance table, workstation metrics table with data
+
+4. USER DASHBOARD - FULL PAGE VIEW
+   - Image: screenshots/user-full-page.png
+   - Location: /dashboard (complete view)
+   - Description: Complete dashboard showing all sections scrolled to view entire page
+   - Shows: All metrics cards, complete worker table, complete workstation table
+
+================================================================================
+ADMIN FLOW SCREENSHOTS
+================================================================================
+
+1. ADMIN REGISTRATION PAGE
+   - Image: screenshots/admin-register.png
+   - Location: /register (admin role)
+   - Description: Admin user registration/login page
+   - Note: Default admin - admin@factory.com / password123
+
+2. ADMIN DASHBOARD - BEFORE RESET
+   - Image: screenshots/admin-before-reset.png
+   - Location: /dashboard (admin logged in)
+   - Description: Admin dashboard with existing data before clicking reset
+   - Shows: Current factory data, "Reset All Data" admin button visible
+
+3. ADMIN DASHBOARD - AFTER RESET
+   - Image: screenshots/admin-after-reset.png
+   - Location: /dashboard (after admin reset)
+   - Description: Dashboard after admin clicks "Reset All Data" and data is reseeded
+   - Shows: Fresh seeded data with 6 workers, 6 workstations, 200+ events
+
+ 
