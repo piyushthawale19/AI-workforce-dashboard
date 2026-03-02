@@ -12,10 +12,17 @@ import metricsRoutes from "./routes/metrics.routes";
 
 const app: Application = express();
 
+// CORS configuration - remove trailing slash for proper origin matching
+const frontendUrl = (
+  process.env.FRONTEND_URL || "http://localhost:3000"
+).replace(/\/$/, "");
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: [frontendUrl, "http://localhost:3000", "http://localhost:3001"],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
